@@ -31,7 +31,7 @@ const Input = React.forwardRef(
       label = "",
       prefix,
       suffix,
-      onChange,
+     
       shape = "",
       size = "",
       variant = "fill",
@@ -40,9 +40,7 @@ const Input = React.forwardRef(
     },
     ref,
   ) => {
-    const handleChange = (e) => {
-      if (onChange) onChange(e?.target?.value);
-    };
+  
 
     return (
       <>
@@ -59,7 +57,7 @@ const Input = React.forwardRef(
             className={`${className} bg-transparent border-0`}
             type={type}
             name={name}
-            onChange={handleChange}
+           
             placeholder={placeholder}
             {...restProps}
           />

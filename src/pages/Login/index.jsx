@@ -1,11 +1,42 @@
-import React from "react";
+import React,{useState} from "react";
 
 import { Sidebar } from "react-pro-sidebar";
 
 import { Button, Img, Text } from "components";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { ClipLoader } from "react-spinners";
+import { useDispatch, useSelector } from "react-redux";
+import {login} from "./loginSlice";
+
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
+  let navigate = useNavigate();
+ 
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+   
+     if(state.login.data){
+      if(state.login.data.error === false){
+        navigate("/patientDashboard")
+      }
+     }
+  
+
+  const onSubmit = async (data) => {
+    dispatch(login({email: data.email,password: data.password}))
+    // navigate("/verification")
+  };
+
+
   return (
     <>
     <div className=" bg-white-A700 h-[1028x] mx-auto relative w-full">
@@ -92,33 +123,66 @@ const LoginPage = () => {
               src="images/img_bottom_right.png"
               alt="top-right-img"
             />
-            <div className="absolute flex flex-col gap-3.5 inset-x-[0] items-center justify-center mx-auto top-[12%] w-[66%] md:w-[80%] sm:w-[80%]">
+            <form onSubmit={handleSubmit(onSubmit)} className="absolute flex flex-col gap-3.5 inset-x-[0] items-center justify-center mx-auto top-[12%] w-[66%] md:w-[80%] sm:w-[80%]">
             <Text
           className="md:ml-[0] ml-[0px] items-center text-center sm:text-xl md:text-[38px] text-[40px] text-teal_900 md:text-white-A700 sm:text-white-A700"
           size="txtPoppinsSemiBold40">
           Already Have an account
         </Text>
 
-        <div className=" flex flex-col inset-x-[0] items-start mx-auto mt-[50px] w-[84%] xs:w-[100%] sm:w-[100%]">
-       <div className=" bg-gray-50_01 flex flex-row h-20 sm:h-[70px] md:h-[70px] items-center justify-between mt-9 md:mt-0 sm:mt-0 p-4 rounded-[10px] shadow-bs w-full">
+        
+        <div className=" flex flex-col inset-x-[0] items-start mx-auto mt-[50px] w-[84%] md:w-[100%] sm:w-[100%]">
+        {errors.email && (
+                      <p className=" text-start text-red-500">
+                        {errors.email.message}
+                      </p>
+                    )}
+       <div className=" bg-gray-50_01 flex flex-row h-20 sm:h-[70px] md:h-[70px] items-center justify-between mt-0 md:mt-0 sm:mt-0 p-4 rounded-[10px] shadow-bs w-full">
        
-                <input className="w-full bg-transparent px-3 h-full"></input>
+                <input 
+                {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                          value: /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi,
+                          message: "Email format is not valid",
+                        },
+                      })}
+                
+                className="w-full bg-transparent px-3 h-full"></input>
                 
               </div>
               <Text
                   className="mb-0.5 mt-1 text-teal-900 text-xl sm:text-base"
                   size="txtPoppinsRegular20">
-                Username/Email
+                Email
                 </Text>
        </div>
 
+       <div className="w-[84%] flex justify-start ml-0">
+       {errors.password && (
+                    <p className=" text-start text-red-500">
+                      {errors.password.message}
+                    </p>
+                  )}
+       </div>
        <div className=" bg-gray-50_01 flex flex-row h-20 sm:h-[70px] md:h-[70px]  items-center justify-between mt-0 p-4 rounded-[10px] shadow-bs w-[84%] md:w-[100%] sm:w-[100%]">
       <Img
           
           src="images/img_group9.svg"
           alt="groupNine"
         />
-        <input className="w-full bg-transparent px-3 h-full"></input>
+        <input
+         {...register("password", {
+                        required: "Password is required",
+                        minLength: 8,
+                        pattern: {
+                          value:
+                            /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
+                          message:
+                            "must contain at least 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+                        },
+                      })}
+         className="w-full bg-transparent px-3 h-full"></input>
         <Img
           src="images/eye.svg"
           alt="groupNine"
@@ -141,14 +205,23 @@ const LoginPage = () => {
       </div>
 
       <Button
-        className="!text-white-A700 cursor-pointer leading-[normal] w-[84%] sm:w-[100%] md:[100%] mt-8 shadow-bs text-center text-xl"
+        className="!text-white-A700 cursor-pointer leading-[normal] w-[84%] sm:w-[100%] md:w-[100%] mt-8 shadow-bs text-center text-xl"
         shape="round"
         color="teal_900"
         size="xl"
         variant="fill"
       >
-        Login Now!!
+         {state.login.isLoading ? (
+                        <ClipLoader color="#FFFFFF" size={30} />
+                      ) : (
+                        "Login Now!!"
+                      )}
       </Button>
+      {state.login.data && (
+                      <p className=" text-start text-red-500">
+                        {state.login.data.message}
+                      </p>
+                    )}
 
      <Link to="/register" className=" flex justify-start w-[84%] sm:w-[100%] md:w-[100%]">
      <Text
@@ -156,7 +229,7 @@ const LoginPage = () => {
         size="txtPoppinsRegular20"
       >
         <span className="text-teal-900 font-poppins text-left font-normal">
-          Don’t have an account{" "}
+          Don’t have an account
         </span>
         <span className="text-teal-900 font-poppins text-left font-bold cursor-pointer">
           Sign up now!!
@@ -164,7 +237,9 @@ const LoginPage = () => {
       </Text>
      </Link>
 
-            </div>
+    
+   
+            </form>
      </div>
 
     </div>

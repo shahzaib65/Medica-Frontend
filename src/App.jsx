@@ -18,6 +18,7 @@ import DoctorpatientscreenPage from "pages/Doctorpatientscreen";
 import DoctorprofilesettingsPage from "pages/Doctorprofilesettings";
 import SessionsandcalendarPage from "pages/Sessionsandcalendar";
 import { ProSidebarProvider } from "react-pro-sidebar";
+import SignupVerificationcodePage from "pages/SignupVerificationcode";
 
 
 function App() {
@@ -25,8 +26,11 @@ function App() {
     <ProSidebarProvider>
    <Router>
       <Routes>
-      <Route path="/" element={<LoginPage/>}/>
+      <Route path="/" element={<PatientDashboardPage/>}/>
+      <Route path="/patientDashboard" element={<LoginPage/>}/>
       <Route path="/register" element={<SignupPage/>}/>
+      <Route path="/verification" element={<SignupVerificationcodePage/>}/>
+      
        
       </Routes>
     </Router>

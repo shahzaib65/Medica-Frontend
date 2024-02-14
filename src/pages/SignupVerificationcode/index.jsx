@@ -1,7 +1,36 @@
-import React from "react";
+import React,{useState} from "react";
 import { Sidebar } from "react-pro-sidebar";
 import { Button, Text } from "components";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { ClipLoader } from "react-spinners";
+import { useDispatch, useSelector } from "react-redux";
+import { verify } from "./verificationSlice";
 const SignupVerificationcodePage = () => {
+
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
+  let navigate = useNavigate();
+ 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  if(state.verify.data){
+    if(state.verify.data.error === false){
+       navigate("/patientDashboard")
+    }
+  }
+
+  const onSubmit = async (data) => {
+    let otp = data.one + data.two + data.three + data.four + data.five + data.six
+     dispatch(verify({otp: otp}))    
+  };
+
+
   return (
     <>
       <div className=" bg-white-A700 h-[1028x] mx-auto relative w-full">
@@ -87,7 +116,7 @@ const SignupVerificationcodePage = () => {
               src="images/img_bottom_right.png"
               alt="top-right-img"
             />
-            <div className="absolute flex flex-col gap-3.5 inset-x-[0] items-center justify-start mx-auto top-[12%] w-[66%] md:w-[80%] sm:w-[80%]">
+            <form onSubmit={handleSubmit(onSubmit)} className="absolute flex flex-col gap-3.5 inset-x-[0] items-center justify-start mx-auto top-[12%] w-[66%] md:w-[80%] sm:w-[80%]">
               <Text
                 className="sm:text-xl md:text-[38px] text-[40px] text-light_blue-700 md:text-white-A700 sm:text-white-A700"
                 size="txtPoppinsSemiBold40"
@@ -102,9 +131,14 @@ const SignupVerificationcodePage = () => {
                   Enter the Verification Code
                 </Text>
               </div>
+              
               <div className="gap-[38px] sm:gap-[20px] md:gap-[20px] grid grid-cols-6 items-center justify-between mt-[79px] md:mt-[20px] sm:mt-[20px] w-full">
-                <div className="bg-gray-50_01 md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
+                <div className="bg-gray-50_01 flex flex-col md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
                   <input
+                   {...register("one", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
                   ></input>
@@ -113,43 +147,79 @@ const SignupVerificationcodePage = () => {
                   <input
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
+                    {...register("two", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                   ></input>
                 </div>
                 <div className="bg-gray-50_01 md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
                   <input
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
+                    {...register("three", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                   ></input>
                 </div>
                 <div className="bg-gray-50_01 md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
                   <input
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
+                    {...register("four", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                   ></input>
                 </div>
                 <div className="bg-gray-50_01 md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
                   <input
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
+                    {...register("five", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                   ></input>
                 </div>
                 <div className="bg-gray-50_01 md:h-[50px] sm:h-[50px] h-[100px] md:w-[50px] sm:-[50px] rounded-[10px] shadow-bs">
                   <input
                     className=" w-full h-full text-center bg-transparent"
                     maxLength={1}
+                    {...register("six", {
+                        required: "Please fill the all fields",
+                        maxLength: 1,
+                      })}
                   ></input>
                 </div>
               </div>
-              <Button
-                className="!text-white-A700 cursor-pointer leading-[normal] w-full md:w-[100%] sm:w-[100%] ml-4 md:ml-[14px] sm:ml-[14px] mt-[83px] md:mt-[20px] sm:mt-[20px] shadow-bs text-center text-xl"
+              {state.verify.data && (
+                      <p className=" text-start text-red-500">
+                        {state.verify.data.message}
+                      </p>
+                    )}
+              <Button type="submit"
+                className="!text-white-A700 cursor-pointer leading-[normal] w-full md:w-[100%] sm:w-[100%] ml-4 md:ml-[14px] sm:ml-[14px] mt-[80px] md:mt-[20px] sm:mt-[20px] shadow-bs text-center text-xl"
                 shape="round"
                 color="teal_900"
                 size="xl"
                 variant="fill"
               >
-                Confirm Now!!
+             {state.verify.isLoading ? (
+                        <ClipLoader color="#FFFFFF" size={30} />
+                      ) : (
+                        "Confirm Now!!"
+                      )}
               </Button>
-            </div>
+              {errors.one && (
+                      <p className=" text-start text-red-500">
+                        {errors.one.message}
+                      </p>
+                    )}
+                  
+              
+            </form>
           </div>
         </div>
       </div>

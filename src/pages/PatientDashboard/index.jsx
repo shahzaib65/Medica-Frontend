@@ -1,12 +1,15 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import {Img, Input, Text } from "components";
+import { SelectBox } from "components/SelectBox";
+import { useDispatch,useSelector } from "react-redux";
+import { service } from "./serviceSlice";
 
 
 const PatientDashboardPage = () => {
-
-  
+const dispatch = useDispatch();
+const state = useSelector((state) => state);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const[MenuIcon,setMenuIcon] = useState(false)
+
 
     const handleButtonClick = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -106,14 +109,36 @@ const PatientDashboardPage = () => {
     },
   ];
 
-  const handleMenuIcon = () =>{
-    setMenuIcon(!MenuIcon);
-  }
+  
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
+
+  const [docService, setService] = useState({});
+  const [name, setName] = useState('');
+  const [location,setLocation] = useState('')
+
+
+
+  
+
+
+  useEffect(()=>{
+  dispatch(service())
+  },[]);
+  
+  if(state.service.data){
+    console.log(state.service.data.services)
+  //  setService(state.service.data.services)
+  }
+
+  function handleClick() {
+    console.log(name,location,docService)
+  }
+
+ 
 
   return (
     <>
@@ -192,38 +217,62 @@ const PatientDashboardPage = () => {
               <div className="flex md:flex-col flex-row font-josefinsans gap-[39px] items-start justify-between w-full">
                 <div className="bg-gray-50_01 flex md:flex-1 md:flex-col flex-row md:gap-5 items-center justify-start md:mt-0 mt-0.5 p-2 rounded-[10px] shadow-bs1 w-[91%] md:w-full">
                   <Input
-                    name="group103"
+                    name="name"
                     placeholder="Enter Doctors Name.."
                     className="!placeholder:text-light_blue-800_99 !text-light_blue-800_99 leading-[normal] p-0 text-left text-xl w-full"
                     wrapClassName="md:ml-[0] ml-[42px] w-[28%] md:w-full"
                     type="text"
                     shape="round"
                     size="md"
+                     onChange={(e) => setName(e.target.value)}
+                     value={name}
                   ></Input>
-                  <Input
-                    name="group113"
-                    placeholder="Specialization.."
-                    className="!placeholder:text-light_blue-800_99 !text-light_blue-800_99 leading-[normal] p-0 text-left text-xl w-full"
-                    wrapClassName="flex md:ml-[0] ml-[18px] w-[32%] md:w-full"
-                    suffix={
-                      <Img
-                        className="h-6 ml-[35px] my-auto"
+                 
+
+              
+
+          <div className="flex md:ml-[0] rounded-[10px] ml-[18px] w-[32%] md:w-full bg-white-A700 justify-between px-2 ">
+          {
+                state.service.data && (
+                  <SelectBox 
+                  className="md:ml-[0] ml-[8px] w-[90%] md:w-full bg-white-A700 text-light_blue-800_99 font-normal text-xl"
+                  placeholderClassName="!placeholder:text-light_blue-800_99 !text-light_blue-800_99 leading-[normal] p-0 text-left text-xl"
+                  indicator={
+                   <p></p>
+                  }
+                  isMulti={false}
+                  name="Services"
+                   options={ state.service.data.services.map((data) => ({
+                   label: data.doctor_service,
+                   value: data.doctor_service,
+                     }))}
+                  isSearchable={true}
+                 size="md"
+                  placeholder="Specialization.."
+                  onChange={(value) => {
+                    console.log(value);
+                    
+                  }}
+               />
+                )
+              }
+  <Img
+                        className="h-6  my-auto"
                         src="images/img_close.svg"
                         alt="close"
                       />
-                    }
-                    shape="round"
-                    size="md"
-                  ></Input>
+          </div>
                   <Input
-                    name="group112"
+                    name="location"
                     placeholder="Locations.."
                     className="!placeholder:text-light_blue-800_99 !text-light_blue-800_99 leading-[normal] p-0 text-left text-xl w-full"
                     wrapClassName="ml-4 md:ml-[0] w-1/4 md:w-full"
                     shape="round"
                     size="md"
+                     onChange={(e) => setLocation(e.target.value)}
+                     value={location}
                   ></Input>
-                  <div className="bg-white-A700 flex flex-col items-center justify-start md:ml-[0] ml-[23px] p-[17px] rounded-[10px] w-[7%] md:w-full">
+                  <div onClick={handleClick} className="bg-white-A700 flex flex-col items-center justify-start md:ml-[0] ml-[23px] p-[17px] rounded-[10px] w-[7%] md:w-full">
                     <Img
                       className="h-6 w-6"
                       src="images/img_search_light_blue_700.svg"
